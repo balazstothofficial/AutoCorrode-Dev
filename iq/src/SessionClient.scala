@@ -21,6 +21,8 @@
 
 package isabelle
 
+import scala.language.unsafeNulls
+
 
 final class SessionClient(session: Session, server: McpServer) {
 

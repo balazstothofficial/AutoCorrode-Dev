@@ -20,6 +20,8 @@ is never retried; every later write is a pure sink-call. See `write` below.
 
 package isabelle.ic2
 
+import scala.language.unsafeNulls
+
 import isabelle._
 
 import java.io.{BufferedReader, IOException, InputStreamReader,
@@ -86,7 +88,9 @@ class JSON_IO private(channel: SocketChannel, sink: JSON_IO.Sink) extends AutoCl
   private val incoming = new LinkedBlockingQueue[Incoming]()
 
   private val reader: Thread = {
-    val t = new Thread(() => read_loop(), "json-io-reader")
+    val t = new Thread(new Runnable {
+      def run(): Unit = read_loop()
+    }, "json-io-reader")
     t.setDaemon(true)
     t
   }

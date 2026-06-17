@@ -8,7 +8,7 @@ object IQUISettingsTest {
 
   private def testDefaults(): Unit = {
     val settings = IQUISettings.parseForTest(
-      (k, d) => d,
+      (_, d) => d,
       (_, d) => d
     )
     assertThat(

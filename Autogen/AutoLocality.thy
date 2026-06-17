@@ -1389,7 +1389,7 @@ ML\<open>
       Option.isSome (capture_noninterrupt (fn () =>
         Goal.prove ctxt [] [] (Logic.mk_equals (lhs, rhs))
           (fn {context, ...} =>
-            asm_full_simp_tac (context addsimps @{thms fun_eq_iff}) 1)))
+            asm_full_simp_tac (context |> Simplifier.add_simps @{thms fun_eq_iff}) 1)))
     end
 
   fun locality_terms_provably_equal ctxt pair =
@@ -2604,7 +2604,7 @@ ML\<open>
         if Term.aconv (stored, actual) then NONE
         else SOME (Goal.prove ctxt [] [] (Logic.mk_equals (stored, actual))
           (fn {context, ...} =>
-            asm_full_simp_tac (context addsimps @{thms fun_eq_iff}) 1))
+            asm_full_simp_tac (context |> Simplifier.add_simps @{thms fun_eq_iff}) 1))
       val rewrites =
         locality_entry_flexible_pairs ctxt actual entry
         |> map_filter prove_rewrite
@@ -2942,7 +2942,7 @@ ML\<open>
         AutoLocality_Instrumentation.Record_Simpset_Builds
     in
       Splitter.add_split @{thm if_split}
-        (put_simpset HOL_ss ctxt addsimps simps)
+        (put_simpset HOL_ss ctxt |> Simplifier.add_simps simps)
     end
 
   \<comment>\<open>The (definition-unfolding + \<^verbatim>\<open>record_simps\<close>) lemma list for a record and a set of constants.
@@ -3158,7 +3158,7 @@ ML\<open>
       val _ = locality_count_one count
         AutoLocality_Instrumentation.Record_Simpset_Builds
       val ctxt' =
-        ctxt addsimps
+        ctxt |> Simplifier.add_simps
           (locality_record_lemmas ctxt rec_name cnames
             @ locality_facts_bundle ctxt rec_name)
         |> fold Splitter.add_split (locality_body_case_splits ctxt cnames)
@@ -3178,7 +3178,7 @@ ML\<open>
         AutoLocality_Instrumentation.Record_Simpset_Builds
     in
       simp_tac
-        (clear_simpset ctxt addsimps
+        (Simplifier.clear_simpset ctxt |> Simplifier.add_simps
           (locality_record_lemmas ctxt rec_name cnames)) 1
     end
 
@@ -3469,7 +3469,7 @@ ML\<open>
                (if null local_rewrites then all_tac
                 else CONVERSION
                   (Conv.bottom_rewrs_conv local_rewrites context) 1)
-               THEN simp_tac (clear_simpset context addsimps simps) 1
+               THEN simp_tac (Simplifier.clear_simpset context |> Simplifier.add_simps simps) 1
              end)
        end) of
        NONE => NONE
@@ -3504,12 +3504,12 @@ ML\<open>
         val back_commutativity =
           locality_core_rewrites ctxt record_simps back_entries
           |> locality_filter_core_rewrites front_footprint
-        val ctxt_clear = clear_simpset ctxt
+        val ctxt_clear = Simplifier.clear_simpset ctxt
         val _ = locality_count_int count
           AutoLocality_Instrumentation.Record_Simpset_Builds (fn () => 3)
-        val ctxt_record_simps = ctxt_clear addsimps record_simps
-        val ctxt_front_commutativity = ctxt_clear addsimps front_commutativity
-        val ctxt_back_commutativity = ctxt_clear addsimps back_commutativity
+        val ctxt_record_simps = ctxt_clear |> Simplifier.add_simps record_simps
+        val ctxt_front_commutativity = ctxt_clear |> Simplifier.add_simps front_commutativity
+        val ctxt_back_commutativity = ctxt_clear |> Simplifier.add_simps back_commutativity
         val inner_conv =
           locality_bottom_rewrs_conv back_locality ctxt
           then_conv Simplifier.rewrite ctxt_front_commutativity
@@ -4541,7 +4541,7 @@ ML\<open>
     in
       { passive = false,
         name = simproc_binding,
-        kind = Simproc,
+        kind = Simplifier.Simproc,
         lhss = [trigger],
         proc = fn _ =>
           locality_cancellation_simproc_for_dispatch dispatch_key,
@@ -5687,7 +5687,7 @@ ML\<open>
               fun add_missing (_, _, _, simproc) =
                 Raw_Simplifier.add_proc simproc
             in
-              Raw_Simplifier.map_ss
+              Raw_Simplifier.map_simpset
                 (fold add_missing missing)
             end
           else I
