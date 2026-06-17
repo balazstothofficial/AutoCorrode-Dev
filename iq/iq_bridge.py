@@ -37,6 +37,27 @@ class MCPBridgeWithReconnect:
         )
         self._recv_buffer = b""
         self._response_queue: List[Dict[str, Any]] = []
+        # When set (directly or via IQ_AUTH_TOKEN_FILE), the bridge authenticates
+        # the TCP session itself on connect, so the MCP client never has to call
+        # the 'authenticate' tool.
+        self.auth_token = self._resolve_auth_token()
+
+    def _resolve_auth_token(self) -> str:
+        """Resolve the I/Q auth token: IQ_AUTH_TOKEN takes precedence, otherwise
+        the contents of the file named by IQ_AUTH_TOKEN_FILE (if any)."""
+        token = os.environ.get("IQ_AUTH_TOKEN", "").strip()
+        if token:
+            return token
+        token_file = os.environ.get("IQ_AUTH_TOKEN_FILE", "").strip()
+        if not token_file:
+            return ""
+        path = os.path.expanduser(token_file)
+        try:
+            with open(path, "r", encoding="utf-8") as handle:
+                return handle.read().strip()
+        except OSError as e:
+            self.log(f"Could not read IQ_AUTH_TOKEN_FILE '{path}': {e}")
+            return ""
 
     def _set_forward_error(self, message: str) -> None:
         self.last_forward_error = message.strip() if message else None
@@ -173,7 +194,12 @@ class MCPBridgeWithReconnect:
                 f"Connected to Isabelle MCP server at {self.server_host}:{self.server_port} "
                 f"(response timeout: {self.response_timeout_sec:.0f}s)"
             )
-            return True
+            # Authenticate the fresh session up-front when a token is configured.
+            # Auth persists for the lifetime of the connection, so this is done
+            # once per (re)connect and the client never calls 'authenticate'.
+            if self.auth_token:
+                self._authenticate()
+            return self.connected
 
         except Exception as e:
             self.log(f"Connection failed: {e}")
@@ -330,6 +356,44 @@ class MCPBridgeWithReconnect:
             if not self._extract_complete_messages(method):
                 self.connected = False
                 return None
+
+    def _authenticate(self) -> bool:
+        """Authenticate the freshly-opened TCP session using IQ_AUTH_TOKEN.
+
+        I/Q authentication persists for the lifetime of a TCP connection, so the
+        bridge authenticates once per (re)connect and the MCP client never needs
+        to call the 'authenticate' tool itself. A wrong token is logged but does
+        not drop the connection (the client could still authenticate manually).
+        """
+        auth_id = "__iq_bridge_auth__"
+        request = {
+            "jsonrpc": "2.0",
+            "id": auth_id,
+            "method": "tools/call",
+            "params": {
+                "name": "authenticate",
+                "arguments": {"token": self.auth_token},
+            },
+        }
+        try:
+            payload = (json.dumps(request) + "\n").encode()
+            self.isabelle_socket.sendall(payload)
+            timeout = min(self.response_timeout_sec, 30.0)
+            response = self._read_response_for_id(
+                "tools/call (authenticate)", auth_id, timeout
+            )
+        except Exception as e:
+            self.log(f"Auto-authentication error: {e}")
+            return False
+
+        if response is None:
+            self.log("Auto-authentication failed: no response from Isabelle server")
+            return False
+        if response.get("error"):
+            self.log(f"Auto-authentication rejected by server: {response['error']}")
+            return False
+        self.log("Bridge auto-authenticated session via IQ_AUTH_TOKEN")
+        return True
 
     def create_error_response(self, request_id: Any, code: int, message: str) -> Dict[str, Any]:
         """Create a standard JSON-RPC error response."""
