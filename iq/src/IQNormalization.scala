@@ -16,6 +16,8 @@
 // `package isabelle.ic2`. Symbol et al. are then in scope unqualified.
 package isabelle
 
+import scala.language.unsafeNulls
+
 object IQNormalization {
 
   /** Result of normalizing text with offset tracking. */

@@ -6,6 +6,8 @@
 // package the rest of I/Q lives in.
 package isabelle
 
+import scala.language.unsafeNulls
+
 import java.io.{BufferedReader, InputStreamReader, OutputStreamWriter, PrintWriter}
 import java.net.Socket
 import scala.util.Using

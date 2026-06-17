@@ -31,6 +31,8 @@
 
 package isabelle
 
+import scala.language.unsafeNulls
+
 
 object SessionTools {
 

@@ -27,6 +27,8 @@
 
 package isabelle
 
+import scala.language.unsafeNulls
+
 object Extended_Query_Operation {
   enum Status { case inactive, failed, waiting, running, finished }
 

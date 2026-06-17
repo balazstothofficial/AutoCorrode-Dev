@@ -22,6 +22,8 @@
 // layer with `package isabelle.ic2`. JSON et al. are then in scope unqualified.
 package isabelle
 
+import scala.language.unsafeNulls
+
 import java.io.{BufferedReader, InputStreamReader, PrintWriter, BufferedWriter, OutputStreamWriter}
 import java.net.{InetAddress, ServerSocket, Socket}
 import java.util.concurrent.{ExecutorService, Executors}
@@ -351,24 +353,26 @@ final class McpServer(
       )
 
       val thread = new Thread(
-        () =>
-          serverSocket.foreach { socket =>
-            while (isRunning) {
-              try {
-                val clientSocket = socket.accept()
-                logger.info(s"MCP Client connected: ${clientSocket.getRemoteSocketAddress}")
+        new Runnable {
+          def run(): Unit =
+            serverSocket.foreach { socket =>
+              while (isRunning) {
+                try {
+                  val clientSocket = socket.accept()
+                  logger.info(s"MCP Client connected: ${clientSocket.getRemoteSocketAddress}")
 
-                val _ = executor.submit(new Runnable {
-                  def run(): Unit = handleClient(clientSocket)
-                })
-              } catch {
-                case _: java.net.SocketException if !isRunning =>
-                  // Server was stopped, ignore
-                case ex: Exception =>
-                  logger.info(s"Error accepting client connection: ${ex.getMessage}")
+                  val _ = executor.submit(new Runnable {
+                    def run(): Unit = handleClient(clientSocket)
+                  })
+                } catch {
+                  case _: java.net.SocketException if !isRunning =>
+                    // Server was stopped, ignore
+                  case ex: Exception =>
+                    logger.info(s"Error accepting client connection: ${ex.getMessage}")
+                }
               }
             }
-          },
+        },
         s"${config.threadPrefix}-mcp-accept-loop"
       )
       thread.setDaemon(true)
@@ -667,7 +671,7 @@ final class McpServer(
 
   private def handleToolCall(
       request: McpProtocol.JsonRpcRequest,
-      send: String => Unit = _ => ()
+      send: String => Unit
   ): Either[(Int, String), Map[String, Any]] = {
     try {
       val toolCall = McpProtocol.decodeToolCall(request) match {

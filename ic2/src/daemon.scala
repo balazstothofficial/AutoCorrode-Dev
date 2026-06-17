@@ -28,6 +28,8 @@ Wire protocol: see ic2/README.md ("Wire protocol").
 
 package isabelle.ic2
 
+import scala.language.unsafeNulls
+
 import isabelle._
 
 import java.io.IOException
@@ -158,7 +160,7 @@ Usage: isabelle ic2 server start [OPTIONS]
       // queries it ON DEMAND via a print_state Extended_Query_Operation (the query
       // makes the command visible so the print function runs), so we do not pay to
       // emit a STATE message for every evaluated command.
-      val options = Options.init(specs = option_specs.reverse.map(Options.Spec.make))
+      val options = Options.init(update = option_specs.reverse.map(Options.Spec.make))
       run(options, name, start_options, trace_dead_events, progress)
     }
   }
@@ -631,7 +633,7 @@ Usage: isabelle ic2 server start [OPTIONS]
             val session_background =
               Sessions.background(options, logic, progress = cap_progress,
                 dirs = dirs, include_sessions = start_options.include_sessions).check_errors
-            val resources = Headless.Resources(options, session_background)
+            val resources = Headless.Resources(options, session_background, Logger.none)
 
             if (live) {
               build_status.set_phase(Phase.StartingSession)

@@ -8,6 +8,8 @@ Service registration for `isabelle ic2` and the `isabelle ic2_test` runner.
 
 package isabelle.ic2
 
+import scala.language.unsafeNulls
+
 import isabelle._
 
 class Tools extends Isabelle_Scala_Tools(

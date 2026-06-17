@@ -336,11 +336,8 @@ fun exec_text timeout_secs text st =
   let val thy = Toplevel.theory_of st
       val transitions = Outer_Syntax.parse_text thy (fn () => thy) Position.none text
       fun run (tr, s) =
-        let val old = !Multithreading.parallel_proofs
-            val _ = Multithreading.parallel_proofs := Int.min (2, old)
-            val s' = Toplevel.command_exception false tr s
-            val _ = Multithreading.parallel_proofs := old
-        in s' end
+        Interactive.setmp_parallel_proofs (Int.min (2, Interactive.parallel_proofs ()))
+          (fn () => Toplevel.command_exception tr s) ()
       fun go () = List.foldl (fn (tr, s) => run (tr, s)) st transitions
   in if timeout_secs > 0
      then Timeout.apply (Time.fromSeconds (Int.toLarge timeout_secs)) go ()
@@ -783,7 +780,7 @@ fun theories () =
   List.app (fn s => out ("  " ^ s)) (Thy_Info.get_names ());
 
 fun is_interactive_session () =
-  ! Printer.show_markup_default;
+  Interactive.enabled ();
 
 (* Load a theory (and its transitive dependencies) by fully qualified name,
    e.g. "HOL-Library.Multiset".  After loading, the theory is available
@@ -794,7 +791,7 @@ fun load_theory name =
     error "load_theory is not available in interactive PIDE sessions. \
           \Open theories in Isabelle/jEdit and use init_from_document instead."
   else
-  let val opts = Options.update "record_theories" "true" (Options.default ())
+  let val opts = Options.update [("record_theories", "true")] (Options.default [])
       val _ = Thy_Info.use_theories opts "" [(name, Position.none)]
   in out ("Loaded theory " ^ quote name) end;
 

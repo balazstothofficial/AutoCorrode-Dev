@@ -6,6 +6,8 @@
 // package the rest of I/Q lives in.
 package isabelle
 
+import scala.language.unsafeNulls
+
 /**
  * Standardized error codes for I/Q MCP server responses.
  * Following JSON-RPC 2.0 specification for error codes.

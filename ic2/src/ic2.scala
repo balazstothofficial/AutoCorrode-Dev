@@ -16,6 +16,8 @@ just the front door: parse the (possibly nested) subcommand, hand the rest off.
 
 package isabelle.ic2
 
+import scala.language.unsafeNulls
+
 import isabelle._
 
 
