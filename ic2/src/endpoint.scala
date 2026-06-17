@@ -22,6 +22,8 @@ Multiple servers can coexist by passing -n <name>.
 
 package isabelle.ic2
 
+import scala.language.unsafeNulls
+
 import isabelle._
 
 import java.nio.file.{Files, Paths}

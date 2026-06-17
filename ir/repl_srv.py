@@ -575,7 +575,7 @@ class BashServer:
 
     def __init__(self, isabelle, quiet=False):
         cmd = [isabelle, "scala", "-e",
-               '{ val server = isabelle.Bash.Server.start(debugging = false); '
+               '{ val server = isabelle.Bash.Server.start(isabelle.Logger.none, debugging = false); '
                'println("BASH_SERVER_ADDRESS=" + server.address); '
                'println("BASH_SERVER_PASSWORD=" + server.password); '
                'Thread.sleep(Long.MaxValue) }']

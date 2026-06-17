@@ -17,6 +17,8 @@ stream progress into a transcript.
 
 package isabelle.ic2
 
+import scala.language.unsafeNulls
+
 import isabelle._
 
 import java.io.{IOException, PrintStream}
@@ -1267,7 +1269,9 @@ Usage: isabelle ic2 server attach [OPTIONS]
       val chunk = new Array[Byte](8192)
       var running = true
       // Detach cleanly on Ctrl-C (the server is unaffected — this only follows).
-      val hook = new Thread(() => { running = false }, "ic2-attach-detach")
+      val hook = new Thread(new Runnable {
+        def run(): Unit = { running = false }
+      }, "ic2-attach-detach")
       Runtime.getRuntime.addShutdownHook(hook)
 
       var missing_socket_ticks = 0

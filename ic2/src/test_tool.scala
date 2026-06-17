@@ -18,6 +18,8 @@ read those two methods for the catalogue. Select individual tests with `-t`.
 
 package isabelle.ic2
 
+import scala.language.unsafeNulls
+
 import isabelle._
 
 import java.io.{ByteArrayOutputStream, PrintStream}
@@ -151,7 +153,7 @@ Usage: isabelle ic2_test [OPTIONS] MODE [DIR]
         "  imports Main\n" +
         "begin\n\n" +
         "lemma " + name + "_1: \"(n::nat) + 0 = n\" by simp\n\n" +
-        "ML ‹OS.Process.sleep (Time.fromReal " + secs + ")›\n\n" +
+        "ML ‹Time.sleep (Time.fromReal " + secs + ")›\n\n" +
         "lemma " + name + "_2: \"(n::nat) * 1 = n\" by simp\n\n" +
         "end\n"
       Files.write(file, body.getBytes("UTF-8"))
@@ -172,7 +174,7 @@ Usage: isabelle ic2_test [OPTIONS] MODE [DIR]
         "begin\n\n" +
         "ML_command ‹\n" +
         "  writeln \"IC2_INCREMENTAL_SLEEP_BEGIN\";\n" +
-        "  OS.Process.sleep (Time.fromReal " + secs + ");\n" +
+        "  Time.sleep (Time.fromReal " + secs + ");\n" +
         "  writeln \"IC2_INCREMENTAL_SLEEP_END\"\n" +
         "›\n\n" +
         "ML_command ‹writeln \"IC2_INCREMENTAL_MARKER_0\"›\n\n" +
@@ -2643,7 +2645,7 @@ Usage: isabelle ic2_test [OPTIONS] MODE [DIR]
         ("session " + sess + " = HOL +\n  theories\n    Slow_Thy\n").getBytes("UTF-8"))
       Files.write(sdir.resolve("Slow_Thy.thy"),
         ("theory Slow_Thy\n  imports Main\nbegin\n" +
-         "ML \\<open>OS.Process.sleep (Time.fromSeconds 30)\\<close>\n" +
+         "ML \\<open>Time.sleep (Time.fromSeconds 30)\\<close>\n" +
          "end\n").getBytes("UTF-8"))
 
       val cmd =

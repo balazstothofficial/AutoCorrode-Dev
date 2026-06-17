@@ -12,6 +12,8 @@
 // layer with `package isabelle.ic2`. JSON et al. are then in scope unqualified.
 package isabelle
 
+import scala.language.unsafeNulls
+
 object McpProtocol {
   final case class JsonRpcRequest(
     method: String,

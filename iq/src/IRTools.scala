@@ -17,6 +17,7 @@
 // then in scope unqualified.
 package isabelle
 
+import scala.language.unsafeNulls
 
 /** The I/R backend connection seam.
   *

@@ -43,6 +43,8 @@ sources are at <AutoCorrode>/ir). repl.py and the I/R ML (ir.ML / tcp_handler.ML
 
 package isabelle.ic2
 
+import scala.language.unsafeNulls
+
 import isabelle._
 
 import java.util.concurrent.atomic.AtomicReference
@@ -137,8 +139,8 @@ object Check {
         val now = Date.now()
         val out = scala.collection.mutable.ListBuffer.empty[RunningCommand]
         for ((id, entry) <- live) {
-          snapshot.find_command(id) match {
-            case Some((_, cmd)) if cmd.node_name == name =>
+          snapshot.get_command(id) match {
+            case Some(cmd) if cmd.node_name == name =>
               out += RunningCommand(cmd.span.name, lineOf(cmd),
                 math.max(0.0, (now - entry.start).seconds), previewOf(cmd.source))
             case Some(_) => // a live command, but in another node — skip

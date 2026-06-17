@@ -729,8 +729,8 @@ fun emit_use_markup_at_pos ctxt kind name pos =
           val const_markup =
             (case head_const hol_term of
                SOME c =>
-                 [Name_Space.markup (Consts.space_of (Proof_Context.consts_of ctxt)) c,
-                  Markup.keyword3]
+                 Name_Space.markups (Consts.space_of (Proof_Context.consts_of ctxt)) c @
+                   [Markup.keyword3]
              | NONE => [])
         in
           app (Context_Position.report ctxt pos) (notation_markup @ const_markup)

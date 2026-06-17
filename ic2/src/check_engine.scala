@@ -44,6 +44,8 @@ a diff is needed. */
 
 package isabelle.ic2
 
+import scala.language.unsafeNulls
+
 import isabelle._
 
 
