@@ -62,7 +62,7 @@ I/Q listens for MCP clients on `127.0.0.1:8765`. The provided [iq_bridge.py](iq_
 echo '{"jsonrpc": "2.0", "method": "tools/list", "id": "1"}' | python3 ./iq_bridge.py
 ```
 
-> **Note:** Most tools require authentication. Call the `authenticate` tool first (see [Security](#security-configuration)), then issue tool calls on the same session.
+> **Note:** Most tools require authentication. Call the `authenticate` tool first (see [Security](#security-configuration)), then issue tool calls on the same session. If you connect through `iq_bridge.py` with `IQ_AUTH_TOKEN` set, the bridge authenticates the session for you, so the client never needs to call `authenticate` itself.
 
 ## Security configuration
 
@@ -86,6 +86,7 @@ Use these environment variables to configure behavior:
 
 The bundled `iq_bridge.py` is a stdio-to-TCP proxy that forwards JSON-RPC messages, enforces socket read timeouts, and supports log-file rotation:
 
+- `IQ_AUTH_TOKEN`: If set, the bridge authenticates the I/Q session itself on every (re)connect, so the MCP client never has to call the `authenticate` tool. Set it to the same value the I/Q server uses. If unset, the bridge does not authenticate and the client must call `authenticate` manually.
 - `IQ_MCP_BRIDGE_HOST`: Host to connect to (default: `localhost`)
 - `IQ_MCP_BRIDGE_PORT`: Port to connect to (default: `8765`)
 - `IQ_MCP_BRIDGE_RESPONSE_TIMEOUT_SEC` (default: `7200`)
