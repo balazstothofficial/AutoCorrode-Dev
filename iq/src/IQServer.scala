@@ -535,8 +535,10 @@ class IQServer(
     logName = "I/Q Server",
     threadPrefix = "iq",
     authToolDescription =
-      "Authenticate with the I/Q MCP server. Must be called before any other tool. " +
-      "If the token is not provided to you, use the IQ_AUTH_TOKEN environment variable if set.",
+      "Authenticate with the I/Q MCP server. When you connect through the I/Q bridge " +
+      "(the standard setup), the bridge authenticates the session automatically from " +
+      "IQ_AUTH_TOKEN / IQ_AUTH_TOKEN_FILE, so you normally do NOT need to call this tool. " +
+      "Only call it if a tool reports that you are not authenticated, and then pass the token argument.",
     // Compose the generic token masking (the authenticate call's "token" field)
     // with I/Q's own "auth_token" redaction.
     redact = line => IQSecurity.redactAuthToken(McpServerConfig.redactTokens(line))
