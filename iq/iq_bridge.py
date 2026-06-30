@@ -395,6 +395,32 @@ class MCPBridgeWithReconnect:
         self.log("Bridge auto-authenticated session via IQ_AUTH_TOKEN")
         return True
 
+    def _maybe_inject_auth_token(self, request: Dict[str, Any]) -> Dict[str, Any]:
+        """Make a client 'authenticate' call succeed without the client knowing
+        the token. The bridge already authenticates each connection from
+        IQ_AUTH_TOKEN / IQ_AUTH_TOKEN_FILE, so a client that follows the legacy
+        'call authenticate first' guidance typically has no token to pass -- and
+        a tokenless authenticate is rejected by the server as 'Invalid
+        authentication token' even on an already-authenticated session. When the
+        bridge holds a token and the client passed none, substitute it so the
+        server validates and reports success."""
+        if not self.auth_token:
+            return request
+        if request.get("method") != "tools/call":
+            return request
+        params = request.get("params")
+        if not isinstance(params, dict) or params.get("name") != "authenticate":
+            return request
+        arguments = params.get("arguments")
+        if not isinstance(arguments, dict):
+            arguments = {}
+            params["arguments"] = arguments
+        existing = arguments.get("token")
+        if not (isinstance(existing, str) and existing.strip()):
+            arguments["token"] = self.auth_token
+            self.log("Injected bridge auth token into client 'authenticate' call")
+        return request
+
     def create_error_response(self, request_id: Any, code: int, message: str) -> Dict[str, Any]:
         """Create a standard JSON-RPC error response."""
         return {
@@ -427,6 +453,9 @@ class MCPBridgeWithReconnect:
                     method = request.get("method", "unknown")
                     request_id = request.get("id")
                     is_notification = 'id' not in request
+
+                    # Make a client 'authenticate' call succeed even with no token.
+                    request = self._maybe_inject_auth_token(request)
 
                     # Forward to Isabelle server (with automatic reconnection)
                     response = self.forward_to_isabelle(request)
