@@ -41,6 +41,11 @@ class MCPBridgeWithReconnect:
         # the TCP session itself on connect, so the MCP client never has to call
         # the 'authenticate' tool.
         self.auth_token = self._resolve_auth_token()
+        # Cache of the last good tools/list result, served when jEdit is down so
+        # MCP discovery still succeeds; the flag records that we served a degraded
+        # (empty/stale) list so we can nudge the client to refresh on reconnect.
+        self._cached_tools_list: Optional[Dict[str, Any]] = None
+        self._served_degraded_tools_list = False
 
     def _resolve_auth_token(self) -> str:
         """Resolve the I/Q auth token: IQ_AUTH_TOKEN takes precedence, otherwise
@@ -199,6 +204,13 @@ class MCPBridgeWithReconnect:
             # once per (re)connect and the client never calls 'authenticate'.
             if self.auth_token:
                 self._authenticate()
+            # If we previously served a degraded tools/list while jEdit was down,
+            # the real toolset is reachable again now -- nudge the client to
+            # re-list so the tools reappear without a manual MCP reload.
+            if self._served_degraded_tools_list:
+                self.log("Reconnected after a degraded tools/list; notifying client to refresh tools")
+                self._emit_to_client({"jsonrpc": "2.0", "method": "notifications/tools/list_changed"})
+                self._served_degraded_tools_list = False
             return self.connected
 
         except Exception as e:
@@ -421,6 +433,59 @@ class MCPBridgeWithReconnect:
             self.log("Injected bridge auth token into client 'authenticate' call")
         return request
 
+    def _emit_to_client(self, message: Dict[str, Any]) -> None:
+        """Write an unsolicited JSON-RPC message (e.g. a notification) to the
+        MCP client on stdout."""
+        try:
+            print(json.dumps(message), flush=True)
+        except Exception as e:
+            self.log(f"Failed to emit message to client: {e}")
+
+    def _envelope_response(self, request_id: Any, result: Dict[str, Any]) -> Dict[str, Any]:
+        return {"jsonrpc": "2.0", "id": request_id, "result": result}
+
+    def _local_initialize_result(self, request: Dict[str, Any]) -> Dict[str, Any]:
+        """A self-contained 'initialize' result so MCP discovery succeeds even
+        when jEdit (the real I/Q server) is not running yet. Echoes the client's
+        requested protocol version for maximum compatibility."""
+        params = request.get("params") if isinstance(request.get("params"), dict) else {}
+        protocol_version = params.get("protocolVersion") or "2025-06-18"
+        return {
+            "protocolVersion": protocol_version,
+            "capabilities": {"tools": {"listChanged": True}},
+            "serverInfo": {"name": "iq-bridge", "version": "0.1.0"},
+        }
+
+    def _handle_envelope_method(self, request: Dict[str, Any]) -> Dict[str, Any]:
+        """Own the MCP discovery envelope (initialize / ping / tools/list). When
+        jEdit is reachable these are forwarded unchanged (and tools/list is
+        cached); when it is down they are answered locally so discovery still
+        completes and the tools reappear once jEdit comes up."""
+        method = request.get("method")
+        request_id = request.get("id")
+
+        response = self.forward_to_isabelle(request)
+        if response is not None:
+            if method == "tools/list" and isinstance(response.get("result"), dict):
+                self._cached_tools_list = response["result"]
+                self._served_degraded_tools_list = False
+            return response
+
+        # Forwarding failed (jEdit down / unreachable): synthesize a response so
+        # MCP discovery does not hard-fail for the whole session.
+        self.log(f"Answering {method} locally (Isabelle server unreachable)")
+        if method == "initialize":
+            return self._envelope_response(request_id, self._local_initialize_result(request))
+        if method == "ping":
+            return self._envelope_response(request_id, {})
+        # tools/list
+        if self._cached_tools_list is not None:
+            self.log("Serving cached tools/list (Isabelle server unreachable)")
+            return self._envelope_response(request_id, self._cached_tools_list)
+        self._served_degraded_tools_list = True
+        self.log("Serving empty tools/list (Isabelle server unreachable, no cache yet)")
+        return self._envelope_response(request_id, {"tools": []})
+
     def create_error_response(self, request_id: Any, code: int, message: str) -> Dict[str, Any]:
         """Create a standard JSON-RPC error response."""
         return {
@@ -457,8 +522,12 @@ class MCPBridgeWithReconnect:
                     # Make a client 'authenticate' call succeed even with no token.
                     request = self._maybe_inject_auth_token(request)
 
-                    # Forward to Isabelle server (with automatic reconnection)
-                    response = self.forward_to_isabelle(request)
+                    # Own the discovery envelope so it survives jEdit being down;
+                    # forward everything else (with automatic reconnection).
+                    if method in ("initialize", "ping", "tools/list"):
+                        response = self._handle_envelope_method(request)
+                    else:
+                        response = self.forward_to_isabelle(request)
 
                     if response:
                         # Send response back to client
