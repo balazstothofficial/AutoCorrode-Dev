@@ -791,8 +791,8 @@ fun load_theory name =
     error "load_theory is not available in interactive PIDE sessions. \
           \Open theories in Isabelle/jEdit and use init_from_document instead."
   else
-  let val opts = Options.update [("record_theories", "true")] (Options.default [])
-      val _ = Thy_Info.use_theories opts "" [(name, Position.none)]
+  let val opts = [Options.spec "record_theories" "true"]
+      val _ = Thy_Info.use_theories "" [((name, Position.none), opts)]
   in out ("Loaded theory " ^ quote name) end;
 
 (* Sledgehammer via compiler bridge *)
