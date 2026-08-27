@@ -14,6 +14,17 @@ object IQPlugin {
   val AUTH_TOKEN_PROPERTY = "iq.mcp.auth.token"
 
   private val DEFAULT_PORT = 8765
+  private val PORT_ENV = "IQ_MCP_PORT"
+
+  /** Starting port for the I/Q server, overridable via the IQ_MCP_PORT
+    * environment variable (e.g. to run release and dev jEdit in parallel on
+    * distinct ports). Falls back to DEFAULT_PORT; the generic MCP server still
+    * scans upward from here if the chosen port is busy. */
+  private def startPort: Int =
+    Option(Isabelle_System.getenv(PORT_ENV)).map(_.trim).filter(_.nonEmpty)
+      .flatMap(s => scala.util.Try(s.toInt).toOption)
+      .filter(p => p > 0 && p < 65536)
+      .getOrElse(DEFAULT_PORT)
 
   @volatile private var instance: Option[IQPlugin] = None
 
@@ -91,12 +102,13 @@ class IQPlugin extends EBPlugin {
 
   private def startServer(): Unit = {
     val securityConfig = buildSecurityConfig()
-    // The port scan (DEFAULT_PORT upward for the first free port) lives in the
+    val startPort = IQPlugin.startPort
+    // The port scan (startPort upward for the first free port) lives in the
     // generic McpServer now: IQServer binds from basePort over IQServer.PortScanSpan
     // and reports the chosen port via `port`. We just start it and read it back.
-    val maxPort = IQPlugin.DEFAULT_PORT + IQServer.PortScanSpan - 1
+    val maxPort = startPort + IQServer.PortScanSpan - 1
     try {
-      val server = new IQServer(basePort = IQPlugin.DEFAULT_PORT, securityConfig = securityConfig)
+      val server = new IQServer(basePort = startPort, securityConfig = securityConfig)
       iqServer = Some(server)
       server.start()
       server.port match {
@@ -114,7 +126,7 @@ class IQPlugin extends EBPlugin {
       case _: java.net.BindException =>
         iqServer = None
         Output.writeln(
-          s"Failed to start Isabelle/Q Server: no free port in range ${IQPlugin.DEFAULT_PORT}–$maxPort"
+          s"Failed to start Isabelle/Q Server: no free port in range $startPort–$maxPort"
         )
       case ex: Exception =>
         iqServer = None
