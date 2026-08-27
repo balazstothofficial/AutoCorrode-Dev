@@ -1130,7 +1130,7 @@ def main():
                         barrier_up.set()  # ok if racy — first thread's fine
                         send_recv(
                             s,
-                            f'OS.Process.sleep (Time.fromMilliseconds '
+                            f'Time.sleep (Time.fromMilliseconds '
                             f'{busy_duration_ms});',
                             timeout=busy_duration_ms / 1000.0 + 5.0)
                     finally:

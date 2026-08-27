@@ -174,7 +174,7 @@ Usage: isabelle ic2_test [OPTIONS] MODE [DIR]
         "  imports Main\n" +
         "begin\n\n" +
         "lemma " + dependency + "_1: \"(n::nat) + 0 = n\" by simp\n\n" +
-        "ML ‹OS.Process.sleep (Time.fromReal " + secs + ")›\n\n" +
+        "ML ‹Time.sleep (Time.fromReal " + secs + ")›\n\n" +
         "lemma " + dependency + "_2: \"(n::nat) * 1 = n\" by simp\n\n" +
         "end\n"
       val targetBody =
@@ -1912,14 +1912,14 @@ Usage: isabelle ic2_test [OPTIONS] MODE [DIR]
             .exists(_.endsWith("/" + base_name_of(slowDependency) + ".thy")) ||
           !JSON.int(timeout, "line").exists(_ > 0) ||
           JSON.string(timeout, "keyword").forall(_.isEmpty) ||
-          !JSON.string(timeout, "preview").exists(_.contains("OS.Process.sleep")))
+          !JSON.string(timeout, "preview").exists(_.contains("Time.sleep")))
         error("timeout should identify theory/file/line/keyword/preview, got " +
           JSON.Format(timeout))
 
       val rendered = ic2("check status -n " + n)
       val renderedText = rendered.out.mkString + rendered.err.mkString
       if (rendered.rc != 0 || !renderedText.contains("command timeout:") ||
-          !renderedText.contains("OS.Process.sleep"))
+          !renderedText.contains("Time.sleep"))
         error("check status should render the retained timeout command, rc=" +
           rendered.rc + " output=" + renderedText)
 
