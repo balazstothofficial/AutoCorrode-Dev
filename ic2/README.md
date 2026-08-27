@@ -271,20 +271,23 @@ client config:
     "ic2": {
       "command": "python3",
       "args": ["/path/to/AutoCorrode/iq/iq_bridge.py"],
-      "env": { "IQ_MCP_BRIDGE_PORT": "8765" }
+      "env": { "IQ_MCP_BRIDGE_PORT": "8765", "IQ_AUTH_TOKEN_FILE": "/path/to/token" }
     }
   }
 }
 ```
 
-Every tool except `initialize` / `tools/list` / `ping` requires auth: the client
-must first call the **`authenticate`** tool with the MCP token. That token comes
-from the SERVER's `IQ_AUTH_TOKEN` (the same variable I/Q uses) if set, else it is
-generated and reported by `ic2 server status` (`I/R MCP: … token=…`). Set
-`IQ_AUTH_TOKEN` in the server's environment to fix it ahead of time. Note the
-bridge itself does not read it — `iq_bridge.py` reads only its own
-`IQ_MCP_BRIDGE_*` settings — so the token has to reach whatever calls
-`authenticate`.
+Every tool except `initialize` / `tools/list` / `ping` requires auth: the session
+must be authenticated with the MCP token before any other tool call. That token
+comes from the SERVER's `IQ_AUTH_TOKEN` (the same variable I/Q uses) if set, else
+it is generated and reported by `ic2 server status` (`I/R MCP: … token=…`). Set
+`IQ_AUTH_TOKEN` in the server's environment to fix it ahead of time.
+
+Give the bridge the same token — `IQ_AUTH_TOKEN`, or `IQ_AUTH_TOKEN_FILE` naming a
+file holding it — and `iq_bridge.py` authenticates each connection itself, so the
+client never calls `authenticate` (and a client that calls it anyway succeeds: the
+bridge substitutes its token when none was passed). Without a token the bridge
+does not authenticate, and it has to reach whatever calls `authenticate`.
 The in-prover `ML_Repl` is never advertised, so nothing can connect around the
 bridge to the prover.
 

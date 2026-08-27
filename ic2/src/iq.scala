@@ -1093,9 +1093,12 @@ object IQ {
         logName = "ic2 MCP",
         threadPrefix = "ic2-mcp",
         authToolDescription =
-          "Authenticate with the ic2 I/R MCP server. Must be called before any " +
-          "other tool. Use the IQ_AUTH_TOKEN value, or the token reported by " +
-          "`isabelle ic2 server status`.")
+          "Authenticate with the ic2 I/R MCP server. When you connect through the " +
+          "I/Q bridge (the standard setup), the bridge authenticates the session " +
+          "automatically from IQ_AUTH_TOKEN / IQ_AUTH_TOKEN_FILE, so you normally " +
+          "do NOT need to call this tool. Only call it if a tool reports that you " +
+          "are not authenticated, and then pass the IQ_AUTH_TOKEN value or the " +
+          "token reported by `isabelle ic2 server status`.")
       val json = new McpJsonCodec {
         def parse(line: String): JSON.T = JSON.parse(line)
         def format(value: Any): String = JSON.Format(value)
