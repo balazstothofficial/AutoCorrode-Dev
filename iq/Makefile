@@ -17,17 +17,24 @@ $(warning Cannot find Isabelle under $(ISABELLE_HOME)/bin/isabelle or $(ISABELLE
 ISABELLE_INSTALLATION_HOME := $(abspath $(ISABELLE_HOME))
 endif
 ISABELLE ?= $(ISABELLE_INSTALLATION_HOME)/bin/isabelle
-JEDIT_DIR := $(shell ls -d $(ISABELLE_INSTALLATION_HOME)/contrib/jedit-* 2>/dev/null | head -1)
-JEDIT_JAR ?= $(JEDIT_DIR)/jedit5.7.0-patched/jedit.jar
-SCALA_HOME ?= $(ISABELLE_INSTALLATION_HOME)/contrib/scala-3.3.4
+# Component locations (jEdit, Scala, xz, zstd, the user settings directory) are
+# asked from the Isabelle installation itself rather than assumed under
+# $(ISABELLE_HOME)/contrib: a development checkout keeps them under
+# ~/.isabelle/contrib, and the Scala version differs between releases. Each one
+# can still be overridden on the command line or from the environment.
+getenv = $(shell $(ISABELLE) getenv -b $(1) 2>/dev/null)
+JEDIT_JAR := $(or $(JEDIT_JAR),$(call getenv,JEDIT_JAR))
+SCALA_HOME := $(or $(SCALA_HOME),$(call getenv,SCALA_HOME))
 SCALAC ?= $(SCALA_HOME)/bin/scalac
 SCALAC_FLAGS ?= -deprecation -feature -unchecked -Werror -Wunused:imports,privates,locals,params -Xlint:all -Wvalue-discard -Wnonunit-statement
 SCALA ?= $(SCALA_HOME)/bin/scala
 SCALA_PARSER_JAR := $(wildcard $(SCALA_HOME)/lib/scala-parser-combinators_3-*.jar)
-XZ_JAR := $(firstword $(wildcard $(ISABELLE_INSTALLATION_HOME)/contrib/xz-java-*/lib/xz-*.jar $(ISABELLE_INSTALLATION_HOME)/contrib/xz-java-*/lib/xz.jar))
-ZSTD_JAR := $(firstword $(wildcard $(ISABELLE_INSTALLATION_HOME)/contrib/zstd-jni-*/lib/zstd-jni-*.jar))
-ISABELLE_JAR ?= $(ISABELLE_INSTALLATION_HOME)/lib/classes/isabelle.jar
-JAVA_HOME ?= $(shell $(ISABELLE) getenv -b JAVA_HOME 2>/dev/null)
+XZ_JAR := $(or $(XZ_JAR),$(firstword $(wildcard $(call getenv,ISABELLE_XZ_HOME)/lib/xz-*.jar $(call getenv,ISABELLE_XZ_HOME)/lib/xz.jar)))
+ZSTD_JAR := $(or $(ZSTD_JAR),$(firstword $(wildcard $(call getenv,ISABELLE_ZSTD_HOME)/lib/zstd-jni-*.jar)))
+ISABELLE_JAR := $(or $(ISABELLE_JAR),$(call getenv,ISABELLE_SCALA_JAR))
+# The plugin runs inside Isabelle's own JVM, so its JDK wins over a JAVA_HOME
+# exported in the environment (which may be older than isabelle.jar needs).
+JAVA_HOME := $(or $(call getenv,JAVA_HOME),$(JAVA_HOME))
 JAVA ?= $(if $(JAVA_HOME),$(JAVA_HOME)/bin/java,java)
 JAR ?= $(if $(JAVA_HOME),$(JAVA_HOME)/bin/jar,jar)
 JAVA_ENV = $(if $(JAVA_HOME),JAVA_HOME="$(JAVA_HOME)" PATH="$(JAVA_HOME)/bin:$$PATH",)
@@ -37,7 +44,7 @@ BUILD_DIR ?= $(PLUGIN_DIR)/build
 CLASSES_DIR ?= $(BUILD_DIR)/classes
 TEST_CLASSES_DIR ?= $(BUILD_DIR)/test-classes
 JAR_FILE ?= $(BUILD_DIR)/iq_plugin.jar
-INSTALL_DIR ?= $(HOME)/.isabelle/Isabelle2025-2/jedit/jars
+INSTALL_DIR := $(or $(INSTALL_DIR),$(call getenv,ISABELLE_HOME_USER)/jedit/jars)
 
 # Source files
 SCALA_SOURCES := $(wildcard src/*.scala)

@@ -19,7 +19,7 @@ The build instructions below assume a Unix-like environment (e.g. Linux, macOS).
 
 ### Building the plugin
 
-You can build the plugin via `make` and `make install`. This compiles the Scala sources and installs the plugin JAR. By default, the JAR is copied to `~/.isabelle/Isabelle2025-2/jedit/jars/`, but you can inspect and configure various environment variables; see `make help`.
+You can build the plugin via `make` and `make install`. This compiles the Scala sources and installs the plugin JAR. By default, the JAR is copied to the `jedit/jars/` directory under the Isabelle user home reported by `isabelle getenv ISABELLE_HOME_USER` (`~/.isabelle/Isabelle2025-2/jedit/jars/` for the release), but you can inspect and configure various environment variables; see `make help`.
 
 ### Registering the plugin
 
