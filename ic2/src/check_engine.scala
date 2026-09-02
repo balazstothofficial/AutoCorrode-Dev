@@ -107,20 +107,19 @@ object Check_Engine {
     try {
       val dependencies = {
         val import_names = targets.map(_ -> Position.none)
-        resources.dependencies(import_names).check_errors
+        resources.dependencies(session.session_options, import_names).check_errors
       }
       // Only local, not-yet-built theories: dependencies already drops heap
       // theories, but filter defensively so the closure never names a loaded one.
       val closure = dependencies.theories.filterNot(resources.loaded_theory)
       val files = dependencies.loaded_files
 
-      val headers: Map[Document.Node.Name, Document.Node.Header] =
-        dependencies.entries.map(e => e.name -> e.header).toMap
-
       val theory_edits: List[Document.Edit_Text] =
         closure.flatMap { name =>
-          val header = headers.getOrElse(name, Document.Node.no_header)
           val fs_text = Symbol.output(unicode_symbols, File.read(name.path))
+          // The node header is read back from the text (as Headless.Resources
+          // does): dependency entries no longer carry a ready-made header.
+          val header = resources.check_thy(session.session_options, name, Scan.char_reader(fs_text))
           val model_text = SessionTools.nodeText(session, name)
           val text_edits =
             if (model_text.isEmpty) Text.Edit.inserts(0, fs_text)

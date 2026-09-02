@@ -427,9 +427,10 @@ async def theories(ctx: Context = None) -> str:
     return await _send(ctx, "Ir.theories ();")
 
 @mcp.tool(description=(
-    "Load a theory (and its transitive dependencies) by fully qualified name into the Isabelle session. "
-    "After loading, the theory becomes available for `init` and appears in `theories`. "
-    "Example: load_theory(\"HOL-Library.Multiset\") loads the Multiset theory from HOL-Library. "
+    "Make a theory available by fully qualified name. The theory must already be part of the session "
+    "heap (build it with `isabelle build`): Isabelle/ML no longer loads theories at runtime, so anything "
+    "outside the heap is reported as an error. After this, the theory is available for `init` and appears "
+    "in `theories`. Example: load_theory(\"HOL-Library.Multiset\") for a heap that includes HOL-Library. "
     "NOTE: Not available when I/R is running inside Isabelle/jEdit (PIDE mode). "
     "In PIDE mode, open theories in jEdit instead and use init_from_document."
 ))

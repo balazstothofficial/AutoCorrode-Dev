@@ -793,8 +793,20 @@ def main():
                 send_recv(sock, 'Ir.source "Main" 0 3 handle ERROR _ => ();')
         run_test("source", test_source)
 
+        # Isabelle/ML no longer loads theories at runtime: Ir.load_theory only
+        # succeeds for theories already in the heap and otherwise reports that.
+        # Against a plain HOL heap the two Multiset tests therefore only check
+        # the error; run with a --session that includes HOL-Library for the rest.
+        def heap_only(out):
+            if "cannot be loaded at runtime" not in out:
+                return False
+            assert "not in the heap" in out, f"Expected heap error, got:\n{out}"
+            return True
+
         def test_load_theory():
             out = send_recv(sock, 'Ir.load_theory "HOL-Library.Multiset";', timeout=300)
+            if heap_only(out):
+                return
             assert "Loaded theory" in out, f"Expected loaded confirmation, got:\n{out}"
             out = send_recv(sock, 'Ir.theories ();')
             assert "Multiset" in out, f"Expected Multiset in theories, got:\n{out}"
@@ -805,7 +817,9 @@ def main():
         run_test("load_theory", test_load_theory)
 
         def test_load_theory_source():
-            send_recv(sock, 'Ir.load_theory "HOL-Library.Multiset";', timeout=300)
+            out = send_recv(sock, 'Ir.load_theory "HOL-Library.Multiset";', timeout=300)
+            if heap_only(out):
+                return
             out = send_recv(sock, 'Ir.source "HOL-Library.Multiset" 0 5;')
             assert "Multiset" in out, f"Expected Multiset in source, got:\n{out}"
             send_recv(sock, 'Ir.init "lts1" ["HOL-Library.Multiset:4"];')

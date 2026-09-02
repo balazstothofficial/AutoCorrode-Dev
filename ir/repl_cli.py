@@ -124,7 +124,7 @@ CLI_VERBS = {
     "merge":         ("Ir.merge",        ["s"],         "inline sub-REPL into its parent"),
     "remove":        ("Ir.remove",       ["s"],         "delete REPL R and its sub-REPLs"),
     "interrupt":     ("Ir.interrupt",    ["s"],         "cooperatively interrupt a busy REPL"),
-    "load-theory":   ("Ir.load_theory",  ["s"],         "load theory NAME into the session"),
+    "load-theory":   ("Ir.load_theory",  ["s"],         "load theory NAME into the session (must be in the session heap)"),
     "source":        ("Ir.source",       ["s", "i", "i"], "theory THY commands START..STOP"),
     "sledgehammer":  ("Ir.sledgehammer", ["s", "i"],    "run sledgehammer on R (SECS timeout)"),
     "timeout":       ("Ir.timeout",      ["s", "i"],    "set step timeout for R (0=unlimited)"),
