@@ -2,5 +2,6 @@ session Isabelle_Assistant = HOL +
   description "Support theories for Isabelle Assistant plugin"
   sessions
     "HOL-Eisbach"
+    iq
   theories
     Assistant_Support
