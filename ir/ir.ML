@@ -334,7 +334,7 @@ fun timeout id secs =
 (* Execute Isar text against a state *)
 fun exec_text timeout_secs text st =
   let val thy = Toplevel.theory_of st
-      val transitions = Outer_Syntax.parse_text thy (fn () => {skipped = false, theory = thy}) Position.none text
+      val transitions = Outer_Syntax.parse_text thy (fn () => {skip_theory = false, theory = thy}) Position.none text
       fun run (tr, s) =
         Interactive.setmp_parallel_proofs (Int.min (2, Interactive.parallel_proofs ()))
           (fn () => Toplevel.command_exception tr s) ()
