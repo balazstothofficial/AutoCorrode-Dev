@@ -211,7 +211,7 @@ object SessionTools {
   def cancelFrontier(session: Session, name: Document.Node.Name): Option[Int] = {
     val snapshot = session.snapshot(node_name = name)
     val node = snapshot.get_node(name)
-    if (node == null || !node.has_header) return None
+    if (node == null || !node.has_thy) return None
     val version = snapshot.version
     var firstUnsettled: Option[Int] = None
     val it = node.commands.iterator
@@ -254,7 +254,7 @@ object SessionTools {
     val edits: List[Document.Edit_Text] =
       cuts.flatMap { case (name, fromOffset) =>
         val node = session.snapshot(node_name = name).get_node(name)
-        if (node == null || !node.has_header) Nil
+        if (node == null || !node.has_thy) Nil
         else {
           val src = node.source
           val off = fromOffset max 0
@@ -263,7 +263,7 @@ object SessionTools {
             val tail = src.substring(off)
             val textEdits = Text.Edit.removes(off, tail) ::: Text.Edit.inserts(off, tail)
             List(
-              name -> Document.Node.Deps(node.header),
+              name -> Document.Node.Thy(node.thy),
               name -> Document.Node.Edits(textEdits),
               name -> Document.Node.Perspective(false, Text.Perspective.empty,
                 Document.Node.Overlays.empty))

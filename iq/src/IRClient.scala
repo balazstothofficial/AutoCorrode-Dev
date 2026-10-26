@@ -354,11 +354,12 @@ final class IRLauncher(
 
       val resources = session.resources
       val node = resources.import_name(Sessions.DRAFT, irDir, "ir")
-      val header = resources.check_thy(session.session_options, node, Scan.char_reader(text))
+      val thy =
+        resources.check_thy(node, Scan.char_reader(text)).eval_conditions(session.conditions)
       // Perspective.required = true so the prover processes the node even though
       // nothing is "visible"; awaitConsolidated then blocks until it settles.
       val edits: List[Document.Edit_Text] = List(
-        node -> Document.Node.Deps(header),
+        node -> Document.Node.Thy(thy),
         node -> Document.Node.Edits(Text.Edit.inserts(0, text)),
         node -> Document.Node.Perspective(true, Text.Perspective.empty, Document.Node.Overlays.empty)
       )
