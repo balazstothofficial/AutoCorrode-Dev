@@ -153,7 +153,7 @@ next
       using is_aligned_no_overflow' next_aligned_block_is_aligned by blast
     moreover from 2 have \<open>addr + 2 ^ next_aligned_block_size addr l - 1 \<le> addr + l - 1\<close>
       by (metis (no_types, opaque_lifting) add_diff_eq lt1_neq0 next_aligned_block_size_le
-           next_aligned_block_size_shrink nle_le verit_minus_simplify(2) word_le_minus_cancel
+           next_aligned_block_size_shrink nle_le diff_zero word_le_minus_cancel
            word_le_not_less word_plus_mono_right)
     moreover from calculation have \<open> {addr..addr + l - 1} =
       { addr .. addr + 2 ^ next_aligned_block_size addr l - 1 }
@@ -197,7 +197,7 @@ next
   moreover from calculation have \<open>2^next_aligned_block_size x l \<le> (2^N :: 64 word)\<close>
     using next_aligned_block_size_le order_trans by blast
   moreover from calculation have \<open>next_aligned_block_size x l \<le> N\<close>
-    by (metis next_aligned_block_size_shrink not_le order.refl p2_gt_0 power_le_mono verit_minus_simplify(2) word_coorder.not_eq_extremum)
+    by (metis next_aligned_block_size_shrink not_le order.refl p2_gt_0 power_le_mono diff_zero word_coorder.not_eq_extremum)
   moreover {
     note calculation
     moreover assume \<open>i > 0\<close>

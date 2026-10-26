@@ -59,16 +59,14 @@ val structured_statement =
 val _ =
   Outer_Syntax.command @{command_keyword "schematic_have"} "schematic local goal"
     (structured_statement >> (fn (a, b, c, d) =>
-      Toplevel.proof' (fn int =>
-        set_schematic_mode #> Proof.have_cmd a NONE (K I) b c d int #> #2)));
+      Toplevel.proof (set_schematic_mode #> Proof.have_cmd a NONE (K I) b c d #> #2)));
 
 val _ =
   Outer_Syntax.command @{command_keyword "schematic_show"} "schematic local goal, to refine pending subgoals"
     (structured_statement >> (fn (a, b, c, d) =>
-      Toplevel.proof' (fn int =>
-        set_schematic_mode #> Proof.show_cmd a NONE (K I) b c d int #> #2)));
+      Toplevel.proof (set_schematic_mode #> Proof.show_cmd a NONE (K I) b c d #> #2)));
 
-fun show_goal_cmd int state =
+fun show_goal_cmd state =
   let
     val {goal, ...} = Proof.raw_goal state;
     val subgoal = Thm.prems_of goal |> hd;
@@ -76,7 +74,7 @@ fun show_goal_cmd int state =
   in
     state
     |> set_schematic_mode
-    |> Proof.show true NONE (K I) [] [] shows int
+    |> Proof.show true NONE (K I) [] [] shows
     |> #2
   end;
 
@@ -85,7 +83,7 @@ the proof state where you now have to prove that goal *)
 val _ =
   Outer_Syntax.command @{command_keyword "show_goal"}
     "show the first pending subgoal (with instantiations applied)"
-    (Scan.succeed (Toplevel.proof' show_goal_cmd));
+    (Scan.succeed (Toplevel.proof show_goal_cmd));
 in end
 \<close>
 
@@ -246,7 +244,7 @@ fun unfold_prems_tac ctxt =
   THEN' (TRY o REPEAT_ALL_NEW (resolve_tac ctxt @{thms SHELVE_IMP_I}));
 
 (* Take apart the conjunction of (folded) implications/quantifications into regular goals *)
-fun decompose_shelved_goals int state =
+fun decompose_shelved_goals state =
   let
     val {goal, ...} = Proof.raw_goal state;
     val subgoal = Thm.prems_of goal |> hd;
@@ -260,7 +258,7 @@ fun decompose_shelved_goals int state =
   in
     state
     |> set_schematic_mode
-    |> Proof.show true NONE (K I) [] [] shows int
+    |> Proof.show true NONE (K I) [] [] shows
     |> #2
     |> Proof.proof (SOME (decompose_method, Position.no_range))
     |> Seq.the_result ""
@@ -277,16 +275,16 @@ fun emit_unshelve_skeleton state =
 
 (* Unshelve: close the shelved tail, decompose the shelved goals, then output a clickable proof
 skeleton for proving those goals *)
-fun unshelve_cmd int state =
+fun unshelve_cmd state =
   state
   |> close_shelve_tail
-  |> decompose_shelved_goals int
+  |> decompose_shelved_goals
   |> emit_unshelve_skeleton;
 
 val _ =
   Outer_Syntax.command @{command_keyword "unshelve"}
     "show shelved goals with concrete proof skeleton"
-    (Scan.succeed (Toplevel.proof' unshelve_cmd));
+    (Scan.succeed (Toplevel.proof unshelve_cmd));
 
 (* Note: uses Logic.strip_params instead of Term.strip_all_vars.
 The former does HHF normalization, and so can spot meta quantification deeper in the
@@ -385,7 +383,7 @@ fun setup_shelving_core state =
     |> Seq.the_result ""
   end;
 
-fun shelving_proof_cmd prems_binding _ state =
+fun shelving_proof_cmd prems_binding state =
   state
   |> setup_shelving_core
   |> store_known_premises prems_binding;
@@ -394,9 +392,9 @@ val _ =
   Outer_Syntax.command @{command_keyword "setup_shelving"}
     "open proof with shelving infrastructure"
     (Scan.optional (Parse.$$$ "premises" |-- Parse.name >> SOME) NONE
-      >> (fn prems => Toplevel.proof' (shelving_proof_cmd prems)));
+      >> (fn prems => Toplevel.proof (shelving_proof_cmd prems)));
 
-fun enter_proof_cmd int state =
+fun enter_proof_cmd state =
   let
     val {goal, ...} = Proof.raw_goal state;
     val subgoal = Thm.prems_of goal |> hd;
@@ -404,14 +402,14 @@ fun enter_proof_cmd int state =
   in
     state
     |> set_schematic_mode
-    |> Proof.show true NONE (K I) [] [] shows int
+    |> Proof.show true NONE (K I) [] [] shows
     |> #2
   end;
 
 val _ =
   Outer_Syntax.command @{command_keyword "begin_proof"}
     "enter the main proof body after setup_shelving"
-    (Scan.succeed (Toplevel.proof' enter_proof_cmd));
+    (Scan.succeed (Toplevel.proof enter_proof_cmd));
 
 in end
 \<close>

@@ -1942,7 +1942,7 @@ using aentails_cancel_multi by (metis assms local.asepconj_emp_unit(1))
 
 lemma asepconj_add_mset [simp]:
   shows \<open>\<star>\<star>(add_mset x xs) = x \<star> \<star>\<star>xs\<close>
-by (metis add_mset_add_single asepconj_multi_def asepconj_multi_single asepconj_multi_split
+by (metis add_single_right_eq_add_mset[symmetric] asepconj_multi_def asepconj_multi_single asepconj_multi_split
   union_commute)
 
 lemma asepconj_multi_cons [simp]:

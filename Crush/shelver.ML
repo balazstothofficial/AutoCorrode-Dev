@@ -138,7 +138,7 @@ fun fold_prems_tac ctxt = SUBGOAL (fn (_, i) =>
   Subgoal.FOCUS_PARAMS (fn {context = ctxt', params, ...} =>
     fold_prems_flat_tac ctxt' 1
     THEN fold_quant_tac ctxt' params) ctxt i
-  THEN Raw_Simplifier.prune_params_tac ctxt);
+  THEN Simplifier.prune_params_tac ctxt);
 
 (* Instantiate the shelf with the current (folded) goal.
    Rotates past already-shelved goals via SHELVE_ROTATE, then
