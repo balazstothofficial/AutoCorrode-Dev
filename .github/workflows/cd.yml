@@ -25,7 +25,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: makarius/isabelle:Isabelle2025-2
+      image: makarius/isabelle:Isabelle2026
       options: --user root
 
     steps:

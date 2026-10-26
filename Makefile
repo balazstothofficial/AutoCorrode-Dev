@@ -13,9 +13,9 @@
         build autolocality-tests autolocality-stress jedit tutorial \
         build-ic2 ic2 ic2-status ic2-stop
 
-# Set this to the directory containing the Isabelle2025-2 binary
-ISABELLE_HOME?=/Applications/Isabelle2025-2.app/bin
-ISABELLE_VERSION?=Isabelle2025-2
+# Set this to the directory containing the Isabelle2026 binary
+ISABELLE_HOME?=/Applications/Isabelle2026.app/bin
+ISABELLE_VERSION?=Isabelle2026
 ISABELLE?=$(ISABELLE_HOME)/isabelle
 # Set this to your home directory
 USER_HOME?=$(HOME)

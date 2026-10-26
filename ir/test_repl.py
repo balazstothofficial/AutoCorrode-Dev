@@ -35,13 +35,13 @@ def find_isabelle(isabelle_arg=None):
     else:
         if sys.platform == "darwin":
             candidates.extend([
-                "/Applications/Isabelle2025-2.app/bin/isabelle",
-                os.path.expanduser("~/Isabelle2025-2.app/bin/isabelle"),
-                os.path.expanduser("~/Isabelle2025-2-experimental.app/bin/isabelle"),
+                "/Applications/Isabelle2026.app/bin/isabelle",
+                os.path.expanduser("~/Isabelle2026.app/bin/isabelle"),
+                os.path.expanduser("~/Isabelle2026-experimental.app/bin/isabelle"),
             ])
         else:
             candidates.extend([
-                os.path.expanduser("~/Isabelle2025-2/bin/isabelle"),
+                os.path.expanduser("~/Isabelle2026/bin/isabelle"),
             ])
     for c in candidates:
         if os.path.isfile(c) and os.access(c, os.X_OK):

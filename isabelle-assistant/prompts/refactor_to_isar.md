@@ -1,5 +1,5 @@
 <!-- Variables: proof (required), goal_state (optional), local_facts (optional), relevant_theorems (optional), context (optional) -->
-Convert this apply-style proof to structured Isar for Isabelle2025-2.
+Convert this apply-style proof to structured Isar for Isabelle2026.
 
 ```isabelle
 {{proof}}

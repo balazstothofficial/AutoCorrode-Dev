@@ -5,7 +5,7 @@ ifndef V
 endif
 
 PLUGIN_DIR := $(shell pwd)
-ISABELLE_HOME ?= /Applications/Isabelle2025-2.app
+ISABELLE_HOME ?= /Applications/Isabelle2026.app
 ifneq ($(wildcard $(ISABELLE_HOME)/bin/isabelle),)
 ISABELLE_INSTALLATION_HOME := $(abspath $(ISABELLE_HOME))
 else ifneq ($(wildcard $(ISABELLE_HOME)/isabelle),)
@@ -44,7 +44,7 @@ LIB_CLASSPATH = $(shell echo $(LIB_JARS) | tr ' ' ':')
 BUILD_DIR ?= $(PLUGIN_DIR)/build
 CLASSES_DIR ?= $(BUILD_DIR)/classes
 JAR_FILE ?= $(BUILD_DIR)/isabelle_assistant.jar
-INSTALL_DIR ?= $(HOME)/.isabelle/Isabelle2025-2/jedit/jars
+INSTALL_DIR ?= $(HOME)/.isabelle/Isabelle2026/jedit/jars
 
 # I/Q Plugin (dependency for proof verification features).
 # Compilation silently failed on an obscure scalac error if neither JAR
@@ -123,7 +123,7 @@ $(CLASSES_DIR)/.resources: $(RESOURCE_FILES) $(PROMPT_FILES) | $(CLASSES_DIR)
 $(CLASSES_DIR):
 	mkdir -p $(CLASSES_DIR)
 
-ISABELLE_SETTINGS_DIR ?= $(HOME)/.isabelle/Isabelle2025-2/etc
+ISABELLE_SETTINGS_DIR ?= $(HOME)/.isabelle/Isabelle2026/etc
 COMPONENT_LINE := init_component "$(PLUGIN_DIR)"
 
 install: iq-install $(JAR_FILE)

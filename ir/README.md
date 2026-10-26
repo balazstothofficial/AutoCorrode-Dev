@@ -153,7 +153,7 @@ By default, `Ir.init` creates a REPL at the end of a theory.
 To fork REPLs at intermediate points (e.g. after a specific lemma,
 or within a proof), you need the intermediate proof states recorded
 in the heap. This uses the `record_theories` option available in
-Isabelle2025-2 or later.
+Isabelle2026 or later.
 
 ### Setup
 
@@ -163,7 +163,7 @@ Build the heap with `record_theories=true`:
 isabelle build -b -o record_theories=true -d /path/to/session My_Session
 ```
 
-Note: this increases heap size by approximately 5x (according to Isabelle2025-2 NEWS).
+Note: this increases heap size by approximately 5x (according to Isabelle2026 NEWS).
 
 ### Usage
 

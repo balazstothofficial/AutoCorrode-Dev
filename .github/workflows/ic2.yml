@@ -21,7 +21,7 @@ jobs:
     name: Unit tests (no session)
     runs-on: ubuntu-latest
     container:
-      image: makarius/isabelle:Isabelle2025-2
+      image: makarius/isabelle:Isabelle2026
       options: --user root
 
     steps:
@@ -46,7 +46,7 @@ jobs:
     name: End-to-end tests (HOL)
     runs-on: ubuntu-latest
     container:
-      image: makarius/isabelle:Isabelle2025-2
+      image: makarius/isabelle:Isabelle2026
       options: --user root
     timeout-minutes: 30
 

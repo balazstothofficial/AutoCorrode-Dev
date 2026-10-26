@@ -1,4 +1,4 @@
-ISABELLE_VERSION ?= Isabelle2025-2
+ISABELLE_VERSION ?= Isabelle2026
 ISABELLE_HOME    ?= /Applications/$(ISABELLE_VERSION).app/bin
 ISABELLE         := $(ISABELLE_HOME)/isabelle
 
