@@ -28,7 +28,7 @@ see where a theory stands and to confirm a finished proof, and
 
 ## Prerequisites
 
-  * **Isabelle2025-2** — IC2 is built and tested against it; the headless
+  * **Isabelle2026** — IC2 is built and tested against it; the headless
     goal-state readout uses its `print_state` query plumbing (see
     `src/Extended_Query_Operation.scala`). The `Makefile` reads `ISABELLE_HOME`
     as the directory containing the `isabelle` binary (not Isabelle's own

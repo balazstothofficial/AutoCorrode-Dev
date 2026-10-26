@@ -72,7 +72,7 @@ def get_heap_base(args, isabelle_bin=None):
 
 def find_isabelle():
     """Try to find isabelle on PATH or in /Applications."""
-    for p in ["/Applications/Isabelle2025-2.app/bin/isabelle",
+    for p in ["/Applications/Isabelle2026.app/bin/isabelle",
               "/Applications/Isabelle2025.app/bin/isabelle"]:
         if os.path.isfile(p):
             return p

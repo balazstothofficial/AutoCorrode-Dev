@@ -6,7 +6,7 @@ endif
 
 COMPONENT_DIR := $(shell pwd)
 FINE_GRAINED_TIMING_DIR ?= $(COMPONENT_DIR)/../Fine_Grained_Timing
-ISABELLE_HOME ?= /Applications/Isabelle2025-2.app
+ISABELLE_HOME ?= /Applications/Isabelle2026.app
 ifneq ($(wildcard $(ISABELLE_HOME)/bin/isabelle),)
 ISABELLE_INSTALLATION_HOME := $(abspath $(ISABELLE_HOME))
 else ifneq ($(wildcard $(ISABELLE_HOME)/isabelle),)
@@ -31,7 +31,7 @@ BUILD_DIR ?= $(COMPONENT_DIR)/build
 CLASSES_DIR ?= $(BUILD_DIR)/classes
 TEST_CLASSES_DIR ?= $(BUILD_DIR)/test-classes
 JAR_FILE ?= $(BUILD_DIR)/fine_grained_timing.jar
-INSTALL_DIR ?= $(HOME)/.isabelle/Isabelle2025-2/jedit/jars
+INSTALL_DIR ?= $(HOME)/.isabelle/Isabelle2026/jedit/jars
 
 SCALA_SOURCES := $(wildcard src/*.scala)
 RESOURCE_FILES := $(wildcard resources/*)

@@ -1,5 +1,5 @@
 <!-- Variables: proof_pattern (required), goal_state (optional), local_facts (optional), relevant_theorems (optional), context (optional) -->
-You are an Isabelle/HOL expert (Isabelle2025-2). Generate an Eisbach method that automates this proof pattern.
+You are an Isabelle/HOL expert (Isabelle2026). Generate an Eisbach method that automates this proof pattern.
 
 ## Proof Pattern
 ```isabelle

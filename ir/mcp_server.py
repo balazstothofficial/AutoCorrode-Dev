@@ -161,7 +161,7 @@ def _load_mcp_symbols():
     """Load symbol table for MCP server."""
     import os, subprocess
     isabelle = os.environ.get("ISABELLE",
-        os.path.expanduser("~/Isabelle2025-2-experimental.app/bin/isabelle"))
+        os.path.expanduser("~/Isabelle2026-experimental.app/bin/isabelle"))
     try:
         isabelle_home = subprocess.check_output(
             [isabelle, "getenv", "-b", "ISABELLE_HOME"],

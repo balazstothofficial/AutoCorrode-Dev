@@ -120,7 +120,7 @@ import sys
 
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-ISABELLE_VERSION = "Isabelle2025-2"
+ISABELLE_VERSION = "Isabelle2026"
 POLYML_CONTRIB = "contrib/polyml-5.9.2-2"
 HEAP_PREFIX = "polyml-5.9.2"
 AFP_RELEASE_DATE = "2026-02-06"

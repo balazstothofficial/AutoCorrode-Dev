@@ -35,7 +35,7 @@ make jedit    # open the tutorial theories in jEdit
 ```
 
 Override `ISABELLE_HOME` if the Isabelle binary lives somewhere other than
-`/Applications/Isabelle2025-2.app/bin`:
+`/Applications/Isabelle2026.app/bin`:
 
 ```
 make ISABELLE_HOME=/path/to/Isabelle/bin build

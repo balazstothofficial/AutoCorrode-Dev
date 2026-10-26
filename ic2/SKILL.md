@@ -111,7 +111,7 @@ client" in ic2/README.md.
 
 ## Common gotchas
 
-- `isabelle` is the Isabelle installation, e.g. `/Applications/Isabelle2025-2.app/bin/isabelle`. If `ic2` is unavailable, register the component with `make -C ic2` in the AutoCorrode repository.
+- `isabelle` is the Isabelle installation, e.g. `/Applications/Isabelle2026.app/bin/isabelle`. If `ic2` is unavailable, register the component with `make -C ic2` in the AutoCorrode repository.
 - Server lifecycle, `check`, `query`, `repl-create` all have their own `isabelle ic2 <subcommand> --help`.
 - ic2 `check attach` is a live-TTY human UI — rejects agent contexts; use `check status` for polling.
 - Prefer absolute `.thy` paths: the CLI resolves relative ones against YOUR cwd, not the server's, and the MCP `check` tool rejects them outright.

@@ -7,7 +7,7 @@ endif
 
 # Paths (configurable via environment variables)
 PLUGIN_DIR := $(shell pwd)
-ISABELLE_HOME ?= /Applications/Isabelle2025-2.app
+ISABELLE_HOME ?= /Applications/Isabelle2026.app
 ifneq ($(wildcard $(ISABELLE_HOME)/bin/isabelle),)
 ISABELLE_INSTALLATION_HOME := $(abspath $(ISABELLE_HOME))
 else ifneq ($(wildcard $(ISABELLE_HOME)/isabelle),)

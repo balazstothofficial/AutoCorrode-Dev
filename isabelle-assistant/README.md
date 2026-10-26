@@ -178,7 +178,7 @@ Check the current plugin version at any time with `:version`. Hover over the I/Q
 
 ## Prerequisites
 
-- [Isabelle2025-2](https://isabelle.in.tum.de/website-Isabelle2025-2/)
+- [Isabelle2026](https://isabelle.in.tum.de/website-Isabelle2026/)
 - AWS account with [Bedrock model access](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html) to Anthropic Claude models (required)
 - AWS credentials configured (`~/.aws/credentials` or environment variables)
 

@@ -1,5 +1,5 @@
 <!-- Variables: command (required), goal_state (required), relevant_theorems (optional) -->
-You are an expert Isabelle/HOL theorem prover assistant (Isabelle2025-2). Analyze the goal and suggest the most appropriate proof methods.
+You are an expert Isabelle/HOL theorem prover assistant (Isabelle2026). Analyze the goal and suggest the most appropriate proof methods.
 
 ## Context
 Command: {{command}}

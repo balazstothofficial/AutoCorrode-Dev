@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
-# Setup Isabelle 2025-2 on a remote Amazon Linux 2023 host (aarch64 or x86_64).
+# Setup Isabelle 2026 on a remote Amazon Linux 2023 host (aarch64 or x86_64).
 # Uses the Poly/ML binary shipped with Isabelle after verifying it runs locally.
 # Usage: setup_al2023.sh user@host [install_dir] [64|32] [skip_build]
 set -euo pipefail
 
 REMOTE="${1:?Usage: $0 user@host [install_dir] [64|32] [skip_build]}"
-INSTALL_DIR="${2:-$HOME/Isabelle2025-2}"
+INSTALL_DIR="${2:-$HOME/Isabelle2026}"
 BITS="${3:-64}"
 SKIP_BUILD="${4:-}"
 
 REMOTE_ARCH=$(ssh "$REMOTE" uname -m)
 case "$REMOTE_ARCH" in
   aarch64)
-    URL="https://isabelle.in.tum.de/website-Isabelle2025-2/dist/Isabelle2025-2_linux_arm.tar.gz"
-    TARBALL="Isabelle2025-2_linux_arm.tar.gz"
+    URL="https://isabelle.in.tum.de/website-Isabelle2026/dist/Isabelle2026_linux_arm.tar.gz"
+    TARBALL="Isabelle2026_linux_arm.tar.gz"
     ;;
   x86_64)
-    URL="https://isabelle.in.tum.de/website-Isabelle2025-2/dist/Isabelle2025-2_linux.tar.gz"
-    TARBALL="Isabelle2025-2_linux.tar.gz"
+    URL="https://isabelle.in.tum.de/website-Isabelle2026/dist/Isabelle2026_linux.tar.gz"
+    TARBALL="Isabelle2026_linux.tar.gz"
     ;;
   *)
     echo "Unsupported architecture: $REMOTE_ARCH" >&2
@@ -61,7 +61,7 @@ else
   trap 'rm -rf "$TMP_DIR"' EXIT
   tar xzf "/tmp/$TARBALL" -C "$TMP_DIR"
   mkdir -p "$(dirname "$INSTALL_DIR")"
-  mv "$TMP_DIR/Isabelle2025-2" "$INSTALL_DIR"
+  mv "$TMP_DIR/Isabelle2026" "$INSTALL_DIR"
   echo "Installed: $INSTALL_DIR"
 fi
 

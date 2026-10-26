@@ -273,7 +273,7 @@ database built without that option is valid but reports zero timing messages.
 
 ### TL;DR
 
-* Add the following to your local `etc/settings` (e.g. `~/.isabelle/Isabelle2025-2/etc/settings`):
+* Add the following to your local `etc/settings` (e.g. `~/.isabelle/Isabelle2026/etc/settings`):
 
 ```
 if [ -n "$ISABELLE_HEAPS_OVERRIDE" ]; then

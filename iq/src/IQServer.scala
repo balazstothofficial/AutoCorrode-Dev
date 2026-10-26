@@ -2292,7 +2292,7 @@ class IQServer(
     val version = snapshot.version
     val node = snapshot.get_node(node_name)
 
-    // Calculate timing information using Node_Status (Overall_Timing was removed in Isabelle2025-2)
+    // Calculate timing information using Node_Status (Overall_Timing was removed in Isabelle2026)
     val node_status = Document_Status.Node_Status.make(Date.now(), state, version, node_name, threshold = Time.zero)
 
     val baseTimingInfo = Map(

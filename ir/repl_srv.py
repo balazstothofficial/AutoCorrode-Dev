@@ -2297,13 +2297,13 @@ def find_isabelle_installation(isabelle_arg):
         if sys.platform == "darwin":
             # macOS: try /Applications and user directory
             candidates.extend([
-                "/Applications/Isabelle2025-2.app/bin/isabelle",
-                os.path.expanduser("~/Isabelle2025-2.app/bin/isabelle"),
+                "/Applications/Isabelle2026.app/bin/isabelle",
+                os.path.expanduser("~/Isabelle2026.app/bin/isabelle"),
             ])
         else:
             # Linux: try home directory
             candidates.extend([
-                os.path.expanduser("~/Isabelle2025-2/bin/isabelle"),
+                os.path.expanduser("~/Isabelle2026/bin/isabelle"),
             ])
 
     for candidate in candidates:
