@@ -527,7 +527,7 @@ next
     by (auto simp add: rbt_share_map_dom')
   moreover from this and \<open>k \<notin> rbt_share_map_dom m\<close> 
   have \<open>mset_set (rbt_share_map_dom ?m') = mset_set (rbt_share_map_dom m) + {# k #}\<close>
-    by (metis Un_insert_right add_mset_add_single mset_set.insert rbt_share_map_dom_finite sup_bot.comm_neutral)
+    by (metis Un_insert_right add_single_right_eq_add_mset[symmetric] mset_set.insert rbt_share_map_dom_finite sup_bot.comm_neutral)
   ultimately show ?case
     by simp
 qed
