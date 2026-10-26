@@ -75,7 +75,7 @@ fun isar_explore exec_id instance text state =
     val thy = Toplevel.theory_of state
     (* Enable quick_and_dirty so that sorry is accepted in proof exploration *)
     val text' = "using [[quick_and_dirty]]\n" ^ text
-    val transitions = Outer_Syntax.parse_text thy (fn () => {skipped = false, theory = thy}) pos text'
+    val transitions = Outer_Syntax.parse_text thy (fn () => {skip_theory = false, theory = thy}) pos text'
       (* Without this, the execution fails with "Unregistered execution" *)
       |> List.map (Toplevel.exec_id exec_id)
 
