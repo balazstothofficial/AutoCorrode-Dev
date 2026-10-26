@@ -504,7 +504,7 @@ ML\<open>
      in
        prove_autogen_prop_with lthy ctxt' [] validity
          (fn {context, ...} =>
-           asm_full_simp_tac (context addsimps rules) 1)
+           asm_full_simp_tac (context |> Simplifier.add_simps rules) 1)
      end
 
    fun define_lens_from
@@ -971,7 +971,7 @@ ML\<open>
      prove_autogen_prop_with lthy ctxt' [] prop
        (fn {context, ...} =>
          asm_full_simp_tac
-           (put_simpset HOL_basic_ss context addsimps rules) 1)
+           (put_simpset HOL_basic_ss context |> Simplifier.add_simps rules) 1)
 
    fun make_focus_code_prop focus selector updater ctxt =
      let
@@ -1061,7 +1061,7 @@ ML\<open>
            (fn {context, ...} =>
              asm_full_simp_tac
                (put_simpset HOL_basic_ss context
-                 addsimps code_rules) 1)
+                 |> Simplifier.add_simps code_rules) 1)
        val (_, lthy') =
          Local_Theory.note
            ((Binding.name (#focus_name field ^ "_code"),
@@ -1258,7 +1258,7 @@ ML\<open>
    fun prove_generated_prop ctxt ctxt' prop rules =
      prove_generated_prop_with ctxt ctxt' [] prop
        (fn {context, ...} =>
-         asm_full_simp_tac (context addsimps rules) 1)
+         asm_full_simp_tac (context |> Simplifier.add_simps rules) 1)
 
    fun prove_update_local ctxt ctxt' premise conclusion r
        updater_def exhaust rules =
@@ -1269,7 +1269,7 @@ ML\<open>
            (SOME exhaust) 1 THEN
          asm_full_simp_tac
            (put_simpset HOL_basic_ss context
-             addsimps (updater_def :: rules @ prems)) 1)
+             |> Simplifier.add_simps (updater_def :: rules @ prems)) 1)
 
    fun note_update_eqns attribs_simp attribs_intro rec_name
        ((field : autolens_field_descriptor), explicit, local_thm) lthy =

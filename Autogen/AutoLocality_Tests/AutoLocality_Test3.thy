@@ -172,7 +172,7 @@ than silently adding nothing. We check this at the ML level (an erroring \<^verb
 passing theory): applying the attribute to the dummy theorem must raise.\<close>
 ML\<open>
   val _ =
-    (Raw_Simplifier.map_ss I (Context.Proof \<^context>);  \<comment>\<open>force evaluation\<close>
+    (Raw_Simplifier.map_simpset I (Context.Proof \<^context>);  \<comment>\<open>force evaluation\<close>
      (case locality_prove_commutativity \<^context> "three"
              (Syntax.read_term \<^context> "opaque_a")
              (Syntax.read_term \<^context> "opaque_a") of
