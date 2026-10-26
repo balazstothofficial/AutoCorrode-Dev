@@ -107,7 +107,7 @@ object Check_Engine {
     try {
       val dependencies = {
         val import_names = targets.map(_ -> Position.none)
-        resources.dependencies(session.session_options, import_names).check_errors
+        resources.dependencies(session.conditions, import_names).check_errors
       }
       // Only local, not-yet-built theories: dependencies already drops heap
       // theories, but filter defensively so the closure never names a loaded one.
@@ -117,16 +117,17 @@ object Check_Engine {
       val theory_edits: List[Document.Edit_Text] =
         closure.flatMap { name =>
           val fs_text = Symbol.output(unicode_symbols, File.read(name.path))
-          // The node header is read back from the text (as Headless.Resources
-          // does): dependency entries no longer carry a ready-made header.
-          val header = resources.check_thy(session.session_options, name, Scan.char_reader(fs_text))
+          // The theory header is read back from the text and its conditions
+          // evaluated, as Headless does for the theories it loads.
+          val thy =
+            resources.check_thy(name, Scan.char_reader(fs_text)).eval_conditions(session.conditions)
           val model_text = SessionTools.nodeText(session, name)
           val text_edits =
             if (model_text.isEmpty) Text.Edit.inserts(0, fs_text)
             else minimalReplace(model_text, fs_text)
           if (text_edits.isEmpty) Nil
           else List(
-            name -> Document.Node.Deps(header),
+            name -> Document.Node.Thy(thy),
             name -> Document.Node.Edits(text_edits),
             name -> notRequired)
         }
