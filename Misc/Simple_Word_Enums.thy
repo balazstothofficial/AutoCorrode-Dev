@@ -609,9 +609,9 @@ fun define_variants type_name wordT words lthy =
              efficient integer comparator opaque to simp: their code equations are used
              by eval after the surrounding word and list expressions have been normalized. *)
           val eval_ctxt =
-            ctxt delsimps
+            Simplifier.del_simps
               [@{thm Sorting_Algorithms.mergesort_is_sort},
-               @{thm comparator_linordered_group_def}]
+               @{thm comparator_linordered_group_def}] ctxt
         in
           Local_Defs.unfold_tac ctxt [def_thm] THEN
           resolve_tac ctxt

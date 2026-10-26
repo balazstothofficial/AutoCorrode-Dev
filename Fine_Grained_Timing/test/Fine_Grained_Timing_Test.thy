@@ -162,7 +162,7 @@ ML \<open>
               (fn () =>
                 (* Sleep so the sample clears the reporting threshold; a pure
                    computation can measure as zero elapsed time. *)
-                (OS.Process.sleep (Time.fromMilliseconds 1); n))))
+                (Time.sleep (Time.fromMilliseconds 1); n))))
     |> Seq.list_of
 
   val _ =
@@ -227,10 +227,10 @@ ML \<open>
           Synchronized.change timing_reports (cons properties))
   fun delayed_sequence [] =
         Seq.make (fn _ =>
-          (OS.Process.sleep (Time.fromMilliseconds 2); NONE))
+          (Time.sleep (Time.fromMilliseconds 2); NONE))
     | delayed_sequence (value :: values) =
         Seq.make (fn _ =>
-          (OS.Process.sleep (Time.fromMilliseconds 2);
+          (Time.sleep (Time.fromMilliseconds 2);
            SOME (value, delayed_sequence values)))
   val timing_result =
     Fine_Grained_Timing.profile_seq (K true) "timing_only" timing_context
