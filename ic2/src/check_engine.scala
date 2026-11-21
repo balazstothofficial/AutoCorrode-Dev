@@ -119,7 +119,7 @@ object Check_Engine {
       }
       // Only local, not-yet-built theories: dependencies already drops heap
       // theories, but filter defensively so the closure never names a loaded one.
-      val closure = dependencies.theories.filterNot(resources.loaded_theory)
+      val closure = dependencies.theories.map(_.name).filterNot(resources.loaded_theory)
       val files = dependencies.loaded_files
 
       val theory_edits: List[Document.Edit_Text] =
@@ -153,7 +153,7 @@ object Check_Engine {
             else minimalReplace(model_text, fs_text)
           if (text_edits.isEmpty) None
           else {
-            val item = Document.Blobs.Item(bytes, fs_text, Symbol.Text_Chunk(fs_text), changed = true)
+            val item = Document.Blobs.Item.make(bytes, changed = true)
             Some((name, item, text_edits))
           }
         }
